@@ -1,0 +1,70 @@
+<div class="flex-container">
+  <mat-form-field>
+    <mat-label>Search characters by name</mat-label>
+    <input
+      matInput
+      #search
+      (keyup)="this.searchTerm$.next(search.value);"
+      [formControl]="searchField"
+    />
+    <button
+      mat-button
+      *ngIf="search.value !== ''"
+      matSuffix
+      mat-icon-button
+      aria-label="Clear"
+      (click)="onClear()"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+  </mat-form-field>
+  <small class="no-character-found" *ngIf="resultsEmpty$ | async">
+    No character found for this search
+  </small>
+</div>
+
+<div class="flex-container">
+  <mat-form-field>
+    <mat-label>Filter</mat-label>
+    <mat-select (selectionChange)="applyFilter()" [(ngModel)]="status">
+      <mat-option [value]="''">Todos</mat-option>
+      <mat-option
+        *ngFor="let status of ['dead', 'alive', 'unknow']"
+        [value]="status"
+      >
+        {{ status }}</mat-option
+      >
+    </mat-select>
+  </mat-form-field>
+</div>
+
+<div class="margin-bottom-30">
+  <mat-label class="margin-right-10">Order by:</mat-label>
+  <mat-radio-group>
+    <mat-radio-button 
+    value="firstAppearance" 
+    (change)="sort($event)"
+    class="margin-right-10">
+    First appearance</mat-radio-button>
+    <mat-radio-button 
+    value="name" 
+    (change)="sort($event)">
+    Name</mat-radio-button>
+  </mat-radio-group>
+</div>
+
+
+<app-search-results
+  *ngIf="characters$ | async"
+  [characters$]="characters$"
+  [(searchField)]="searchField"
+  [(searchTerm)]="searchTerm$"
+></app-search-results>
+
+<mat-paginator
+  [length]="resultsLength"
+  [pageSize]="20"
+  [pageSizeOptions]="[5, 10, 20]"
+  showFirstLastButtons
+>
+</mat-paginator>
